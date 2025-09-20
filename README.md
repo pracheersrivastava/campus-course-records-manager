@@ -86,6 +86,7 @@ java -ea edu.ccrm.cli.MainMenu
 ```
 
 ---
-
+<!--
 ## 9. Acknowledgements
 This project was generated with the assistance of an advanced AI programming assistant.
+-->
