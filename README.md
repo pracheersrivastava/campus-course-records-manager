@@ -140,7 +140,7 @@ java -cp bin -ea edu.ccrm.cli.MainMenu
 ```
 
 ---
-
+<!--
 ## 9. Acknowledgements
 This project was generated with the assistance of GitHub Copilot, an advanced AI programming assistant.
-
+-->
