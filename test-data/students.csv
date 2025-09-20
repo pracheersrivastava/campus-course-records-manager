@@ -1,0 +1,6 @@
+regNo,fullName,email,status
+STU001,Alice Johnson,alice.j@example.com,ACTIVE
+STU002,Bob Williams,bob.w@example.com,ACTIVE
+STU003,Charlie Brown,charlie.b@example.com,INACTIVE
+STU004,Diana Miller,diana.m@example.com,ACTIVE
+STU005,Eve Davis,eve.d@example.com,ACTIVE
