@@ -42,7 +42,7 @@ public class MainMenu {
         int choice;
         do {
             printMainMenu();
-            choice = getIntInput();
+            choice = getIntInput("Choose an option: ");
             switch (choice) {
                 case 1 -> manageStudents();
                 case 2 -> manageCourses();
@@ -80,8 +80,7 @@ public class MainMenu {
             System.out.println("4. Deactivate a Student");
             System.out.println("5. Print Student Transcript");
             System.out.println("0. Back to Main Menu");
-            System.out.print("Choose an option: ");
-            choice = getIntInput();
+            choice = getIntInput("Choose an option: ");
 
             switch (choice) {
                 case 1 -> addStudent();
@@ -96,13 +95,14 @@ public class MainMenu {
     }
 
     private void addStudent() {
-        System.out.print("Enter Full Name: ");
-        String name = scanner.nextLine();
-        System.out.print("Enter Email: ");
-        String email = scanner.nextLine();
-        if (!Validators.isValidEmail(email)) {
-            System.out.println("Invalid email format.");
-            return;
+        String name = getStringInput("Enter Full Name: ");
+        String email;
+        while (true) {
+            email = getStringInput("Enter Email: ");
+            if (Validators.isValidEmail(email)) {
+                break;
+            }
+            System.out.println("Invalid email format. Please try again.");
         }
         Student student = new Student(name, email);
         studentService.addStudent(student);
@@ -117,40 +117,40 @@ public class MainMenu {
     }
 
     private void updateStudent() {
-        System.out.print("Enter Student RegNo to update: ");
-        String regNo = scanner.nextLine();
-        studentService.findStudentByRegNo(regNo).ifPresentOrElse(student -> {
-            System.out.print("Enter new Full Name (or press Enter to keep current): ");
-            String name = scanner.nextLine();
-            if (Validators.isNotNullOrEmpty(name)) {
-                student.setFullName(name);
-            }
-            System.out.print("Enter new Email (or press Enter to keep current): ");
-            String email = scanner.nextLine();
-            if (Validators.isNotNullOrEmpty(email)) {
+        Student student = getStudentFromInput();
+        if (student == null) return;
+
+        System.out.print("Enter new Full Name (or press Enter to keep '" + student.getFullName() + "'): ");
+        String name = scanner.nextLine();
+        if (Validators.isNotNullOrEmpty(name)) {
+            student.setFullName(name);
+        }
+
+        System.out.print("Enter new Email (or press Enter to keep '" + student.getEmail() + "'): ");
+        String email = scanner.nextLine();
+        if (Validators.isNotNullOrEmpty(email)) {
+            if (Validators.isValidEmail(email)) {
                 student.setEmail(email);
+            } else {
+                System.out.println("Invalid email format. Email not updated.");
             }
-            System.out.println("Student updated successfully.");
-        }, () -> System.out.println("Student not found."));
+        }
+        System.out.println("Student updated successfully.");
     }
 
     private void deactivateStudent() {
-        System.out.print("Enter Student RegNo to deactivate: ");
-        String regNo = scanner.nextLine();
-        studentService.findStudentByRegNo(regNo).ifPresentOrElse(
-            s -> {
-                s.setStatus(StudentStatus.INACTIVE);
-                System.out.println("Student deactivated.");
-            },
-            () -> System.out.println("Student not found.")
-        );
+        Student student = getStudentFromInput();
+        if (student != null) {
+            student.setStatus(StudentStatus.INACTIVE);
+            System.out.println("Student " + student.getRegNo() + " deactivated.");
+        }
     }
 
     private void printTranscript() {
-        System.out.print("Enter Student RegNo: ");
-        String regNo = scanner.nextLine();
+        Student student = getStudentFromInput();
+        if (student == null) return;
         try {
-            String transcript = transcriptService.generateTranscript(regNo);
+            String transcript = transcriptService.generateTranscript(student.getRegNo());
             System.out.println(transcript);
         } catch (IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());
@@ -166,8 +166,7 @@ public class MainMenu {
             System.out.println("2. List all Courses");
             System.out.println("3. Search/Filter Courses");
             System.out.println("0. Back to Main Menu");
-            System.out.print("Choose an option: ");
-            choice = getIntInput();
+            choice = getIntInput("Choose an option: ");
 
             switch (choice) {
                 case 1 -> addCourse();
@@ -180,18 +179,12 @@ public class MainMenu {
     }
 
     private void addCourse() {
-        System.out.print("Enter Course Code (e.g., CS101): ");
-        String code = scanner.nextLine();
-        System.out.print("Enter Course Title: ");
-        String title = scanner.nextLine();
-        System.out.print("Enter Credits: ");
-        int credits = getIntInput();
-        System.out.print("Enter Instructor Name: ");
-        String instructor = scanner.nextLine();
-        System.out.print("Enter Semester (SPRING, SUMMER, FALL): ");
-        Semester semester = Semester.valueOf(scanner.nextLine().toUpperCase());
-        System.out.print("Enter Department: ");
-        String department = scanner.nextLine();
+        String code = getStringInput("Enter Course Code (e.g., CS101): ");
+        String title = getStringInput("Enter Course Title: ");
+        int credits = getIntInput("Enter Credits: ");
+        String instructor = getStringInput("Enter Instructor Name: ");
+        Semester semester = getSemesterInput("Enter Semester (SPRING, SUMMER, FALL): ");
+        String department = getStringInput("Enter Department: ");
 
         Course course = new Course.Builder(code, title)
                 .credits(credits)
@@ -214,22 +207,19 @@ public class MainMenu {
     
     private void searchCourses() {
         System.out.println("Filter by: 1. Instructor, 2. Department, 3. Semester");
-        int choice = getIntInput();
+        int choice = getIntInput("Choose an option: ");
         List<Course> results;
         switch(choice) {
             case 1:
-                System.out.print("Enter instructor name: ");
-                String instructor = scanner.nextLine();
+                String instructor = getStringInput("Enter instructor name: ");
                 results = courseService.filterByInstructor(instructor);
                 break;
             case 2:
-                System.out.print("Enter department name: ");
-                String dept = scanner.nextLine();
+                String dept = getStringInput("Enter department name: ");
                 results = courseService.filterByDepartment(dept);
                 break;
             case 3:
-                System.out.print("Enter semester (SPRING, SUMMER, FALL): ");
-                Semester semester = Semester.valueOf(scanner.nextLine().toUpperCase());
+                Semester semester = getSemesterInput("Enter semester (SPRING, SUMMER, FALL): ");
                 results = courseService.filterBySemester(semester);
                 break;
             default:
@@ -247,8 +237,7 @@ public class MainMenu {
             System.out.println("1. Enroll a Student in a Course");
             System.out.println("2. Assign Grade to Student");
             System.out.println("0. Back to Main Menu");
-            System.out.print("Choose an option: ");
-            choice = getIntInput();
+            choice = getIntInput("Choose an option: ");
 
             switch (choice) {
                 case 1 -> enrollStudent();
@@ -260,12 +249,13 @@ public class MainMenu {
     }
 
     private void enrollStudent() {
-        System.out.print("Enter Student RegNo: ");
-        String regNo = scanner.nextLine();
-        System.out.print("Enter Course Code: ");
-        String courseCode = scanner.nextLine();
+        Student student = getStudentFromInput();
+        if (student == null) return;
+        Course course = getCourseFromInput();
+        if (course == null) return;
+
         try {
-            enrollmentService.enrollStudent(regNo, courseCode);
+            enrollmentService.enrollStudent(student.getRegNo(), course.getCourseCode().getCode());
             System.out.println("Enrollment successful.");
         } catch (DuplicateEnrollmentException | MaxCreditLimitExceededException | IllegalArgumentException e) {
             System.err.println("Enrollment failed: " + e.getMessage());
@@ -273,17 +263,18 @@ public class MainMenu {
     }
 
     private void assignGrade() {
-        System.out.print("Enter Student RegNo: ");
-        String regNo = scanner.nextLine();
-        System.out.print("Enter Course Code: ");
-        String courseCode = scanner.nextLine();
-        System.out.print("Enter Grade (S, A, B, C, D, E, F): ");
+        Student student = getStudentFromInput();
+        if (student == null) return;
+        Course course = getCourseFromInput();
+        if (course == null) return;
+        
+        Grade grade = getGradeInput("Enter Grade (S, A, B, C, D, E, F): ");
+
         try {
-            Grade grade = Grade.valueOf(scanner.nextLine().toUpperCase());
-            enrollmentService.assignGrade(regNo, courseCode, grade);
+            enrollmentService.assignGrade(student.getRegNo(), course.getCourseCode().getCode(), grade);
             System.out.println("Grade assigned successfully.");
         } catch (IllegalArgumentException e) {
-            System.err.println("Invalid grade or input. " + e.getMessage());
+            System.err.println("Grade assignment failed: " + e.getMessage());
         }
     }
 
@@ -291,8 +282,7 @@ public class MainMenu {
         System.out.println("\n--- Import / Export Data ---");
         System.out.println("1. Import all data from CSV");
         System.out.println("2. Export all data to CSV");
-        System.out.print("Choose an option: ");
-        int choice = getIntInput();
+        int choice = getIntInput("Choose an option: ");
         try {
             if (choice == 1) {
                 importExportService.importAllData();
@@ -311,8 +301,9 @@ public class MainMenu {
         System.out.println("1. Create a new backup");
         System.out.println("2. Show total backup size");
         System.out.println("3. Show GPA Distribution Report");
-        System.out.print("Choose an option: ");
-        int choice = getIntInput();
+        System.out.println("4. Show Top N Students Report");
+        System.out.println("5. Show Course Enrollment Statistics");
+        int choice = getIntInput("Choose an option: ");
         try {
             switch(choice) {
                 case 1:
@@ -328,6 +319,17 @@ public class MainMenu {
                     transcriptService.getGpaDistribution().forEach((name, gpa) -> 
                         System.out.printf("  %-20s | %.2f\n", name, gpa));
                     break;
+                case 4:
+                    int n = getIntInput("Enter the number of top students to show: ");
+                    System.out.println("\n--- Top " + n + " Students by GPA ---");
+                    transcriptService.getTopNStudents(n).forEach((name, gpa) ->
+                        System.out.printf("  %-20s | %.2f\n", name, gpa));
+                    break;
+                case 5:
+                    System.out.println("\n--- Course Enrollment Statistics ---");
+                    transcriptService.getCourseEnrollmentStats().forEach((title, count) ->
+                        System.out.printf("  %-30s | %d student(s)\n", title, count));
+                    break;
                 default:
                     System.out.println("Invalid option.");
             }
@@ -336,12 +338,82 @@ public class MainMenu {
         }
     }
 
-    private int getIntInput() {
-        try {
-            return Integer.parseInt(scanner.nextLine());
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input. Please enter a number.");
-            return -1; // Indicates an error
+    // --- Robust Input Helper Methods ---
+
+    private int getIntInput(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            try {
+                return Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a whole number.");
+            }
         }
     }
+
+    private String getStringInput(String prompt) {
+        String input;
+        while (true) {
+            System.out.print(prompt);
+            input = scanner.nextLine();
+            if (Validators.isNotNullOrEmpty(input)) {
+                return input;
+            }
+            System.out.println("Input cannot be empty. Please try again.");
+        }
+    }
+
+    private Semester getSemesterInput(String prompt) {
+        while (true) {
+            String input = getStringInput(prompt).toUpperCase();
+            try {
+                return Semester.valueOf(input);
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid semester. Please enter SPRING, SUMMER, or FALL.");
+            }
+        }
+    }
+
+    private Grade getGradeInput(String prompt) {
+        while (true) {
+            String input = getStringInput(prompt).toUpperCase();
+            try {
+                return Grade.valueOf(input);
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid grade. Please enter S, A, B, C, D, E, or F.");
+            }
+        }
+    }
+
+    private Student getStudentFromInput() {
+        while (true) {
+            String regNo = getStringInput("Enter Student RegNo: ");
+            var studentOpt = studentService.findStudentByRegNo(regNo);
+            if (studentOpt.isPresent()) {
+                return studentOpt.get();
+            }
+            System.out.println("Student with registration number '" + regNo + "' not found. Please try again.");
+            System.out.print("Press Enter to try again or type 'exit' to cancel: ");
+            if (scanner.nextLine().equalsIgnoreCase("exit")) {
+                return null;
+            }
+        }
+    }
+
+    private Course getCourseFromInput() {
+        while (true) {
+            String courseCode = getStringInput("Enter Course Code: ");
+            var courseOpt = courseService.findCourseByCode(courseCode);
+            if (courseOpt.isPresent()) {
+                return courseOpt.get();
+            }
+            System.out.println("Course with code '" + courseCode + "' not found. Please try again.");
+            System.out.print("Press Enter to try again or type 'exit' to cancel: ");
+            if (scanner.nextLine().equalsIgnoreCase("exit")) {
+                return null;
+            }
+        }
+    }
+
+
 }

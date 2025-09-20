@@ -83,4 +83,45 @@ public class TranscriptService {
                 this::calculateGpa
             ));
     }
+
+    /**
+     * Finds the top N students based on their GPA.
+     * @param n The number of top students to return.
+     * @return A map of student names to their GPAs, sorted in descending order of GPA.
+     */
+    public Map<String, Double> getTopNStudents(int n) {
+        return studentService.getAllStudents().stream()
+            .sorted((s1, s2) -> Double.compare(calculateGpa(s2), calculateGpa(s1)))
+            .limit(n)
+            .collect(Collectors.toMap(
+                Student::getFullName,
+                this::calculateGpa,
+                (e1, e2) -> e1,
+                java.util.LinkedHashMap::new // Preserve insertion order
+            ));
+    }
+
+    /**
+     * Calculates and returns the enrollment count for each course.
+     * @return A map where the key is the course title and the value is the number of students enrolled.
+     */
+    public Map<String, Long> getCourseEnrollmentStats() {
+        return studentService.getAllStudents().stream()
+            .flatMap(student -> student.getEnrolledCourses().stream())
+            .map(Enrollment::getCourseCode)
+            .collect(Collectors.groupingBy(
+                courseCode -> courseService.findCourseByCode(courseCode.getCode())
+                                           .map(Course::getTitle)
+                                           .orElse("Unknown Course"),
+                Collectors.counting()
+            ))
+            .entrySet().stream()
+            .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                Map.Entry::getValue,
+                (e1, e2) -> e1,
+                java.util.LinkedHashMap::new
+            ));
+    }
 }
