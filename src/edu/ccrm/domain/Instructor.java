@@ -1,15 +1,17 @@
+
+
+
+
+
+
+
+
+
 package edu.ccrm.domain;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Represents an instructor in the CCRM system.
- *
- * DEMONSTRATES:
- * - Inheritance: Extends the abstract Person class.
- * - Polymorphism: Provides a specific implementation of getDetails().
- */
 public class Instructor extends Person {
 
     private String department;
@@ -33,7 +35,6 @@ public class Instructor extends Person {
         }
     }
 
-    // Getters and Setters
     public String getDepartment() {
         return department;
     }
@@ -43,6 +44,6 @@ public class Instructor extends Person {
     }
 
     public List<CourseCode> getCoursesTaught() {
-        return new ArrayList<>(coursesTaught); // Return a copy
+        return new ArrayList<>(coursesTaught);
     }
 }

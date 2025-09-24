@@ -1,16 +1,20 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
 package edu.ccrm.domain;
 
 import java.time.LocalDateTime;
 
-/**
- * Abstract base class for any person in the CCRM system (e.g., Student, Instructor).
- *
- * DEMONSTRATES:
- * - Abstraction: Cannot be instantiated; defines a common template.
- * - Encapsulation: Fields are private with public/protected accessors.
- * - Abstract Methods: `getDetails()` must be implemented by subclasses.
- * - Common state and behavior for subclasses.
- */
 public abstract class Person {
     private static long idCounter = 1;
 
@@ -28,10 +32,8 @@ public abstract class Person {
         this.dateModified = LocalDateTime.now();
     }
 
-    // Abstract method to be implemented by subclasses
     public abstract String getDetails();
 
-    // Getters and Setters
     public long getId() {
         return id;
     }

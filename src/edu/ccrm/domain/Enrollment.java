@@ -1,14 +1,16 @@
+
+
+
+
+
+
+
+
+
 package edu.ccrm.domain;
 
 import java.time.LocalDateTime;
 
-/**
- * Represents the enrollment of a student in a specific course.
- *
- * DEMONSTRATES:
- * - Association class: Links Student and Course.
- * - Use of the Date/Time API (LocalDateTime).
- */
 public class Enrollment {
     private final String studentRegNo;
     private final CourseCode courseCode;
@@ -19,10 +21,9 @@ public class Enrollment {
         this.studentRegNo = studentRegNo;
         this.courseCode = courseCode;
         this.enrollmentDate = LocalDateTime.now();
-        this.grade = null; // Grade is assigned later
+        this.grade = null;
     }
 
-    // Getters and Setters
     public String getStudentRegNo() {
         return studentRegNo;
     }

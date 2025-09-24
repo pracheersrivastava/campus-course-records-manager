@@ -1,13 +1,11 @@
+
+
+
+
+
+
 package edu.ccrm.domain;
 
-/**
- * An immutable class representing a course code.
- *
- * DEMONSTRATES:
- * - Immutability: Fields are final and private, no setters.
- * - Overriding equals() and hashCode() for value-based comparison.
- * - Record-like class structure before records were mainstream.
- */
 public final class CourseCode {
     private final String code;
 

@@ -1,14 +1,5 @@
 package edu.ccrm.domain;
 
-/**
- * Represents a course offered by the campus.
- *
- * DEMONSTRATES:
- * - Builder Design Pattern: For constructing complex objects step-by-step.
- * - Encapsulation.
- * - Use of enums (Semester).
- * - Inner Class: The Builder class is an inner class.
- */
 public class Course {
 
     private final CourseCode courseCode;
@@ -19,7 +10,6 @@ public class Course {
     private final String department;
     private boolean active;
 
-    // Private constructor to be used by the Builder
     private Course(Builder builder) {
         this.courseCode = builder.courseCode;
         this.title = builder.title;
@@ -27,13 +17,9 @@ public class Course {
         this.instructor = builder.instructor;
         this.semester = builder.semester;
         this.department = builder.department;
-        this.active = true; // Active by default
+        this.active = true;
     }
 
-    /**
-     * DEMONSTRATES: Inner Class (non-static).
-     * The Builder class for constructing a Course instance.
-     */
     public static class Builder {
         private CourseCode courseCode;
         private String title;
@@ -68,12 +54,10 @@ public class Course {
         }
 
         public Course build() {
-            // Validation can be done here
             return new Course(this);
         }
     }
 
-    // Getters
     public CourseCode getCourseCode() {
         return courseCode;
     }
