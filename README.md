@@ -138,9 +138,3 @@ java -cp bin -ea edu.ccrm.cli.MainMenu
 
 # In Eclipse, you can add this to the VM arguments in the Run Configuration.
 ```
-
----
-<!--
-## 9. Acknowledgements
-This project was generated with the assistance of GitHub Copilot, an advanced AI programming assistant.
--->
